@@ -292,9 +292,7 @@ app.get("/:scheduleId/edit", async (c) => {
           </div>
           <div class="mb-3">
             <label class="form-label">メモ</label>
-            <textarea name="memo" class="form-control">
-              ${schedule.memo}
-            </textarea>
+            <textarea name="memo" class="form-control">${schedule.memo}</textarea>
           </div>
           <div class="mb-3">
             <label class="form-label">既存の候補日程</label>
@@ -334,7 +332,7 @@ app.post("/:scheduleId/update", async (c) => {
     return c.notFound();
   }
 
-  const body = await c.req.json();
+  const body = await c.req.parseBody();
   const updatedSchedule = await prisma.schedule.update({
     where: { scheduleId: schedule.scheduleId },
     data: {
