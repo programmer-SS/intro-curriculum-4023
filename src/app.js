@@ -1,6 +1,7 @@
 "use strict";
 
 const { Hono } = require("hono");
+const { csrf } = require("hono/csrf");
 const { logger } = require("hono/logger");
 const { html } = require("hono/html");
 const { HTTPException } = require("hono/http-exception");
@@ -23,6 +24,7 @@ const commentsRouter = require("./routes/comments");
 
 const app = new Hono();
 
+app.use(csrf());
 app.use(logger());
 app.use(serveStatic({ root: "./public" }));
 app.use(secureHeaders());
