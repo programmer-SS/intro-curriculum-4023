@@ -2,14 +2,58 @@ const { Hono } = require("hono");
 const ensureAuthenticated = require("../middlewares/ensure-authenticated");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient({ log: ["query"] });
+const { z } = require("zod");
+const { zValidator } = require("@hono/zod-validator");
 
 const app = new Hono();
 
+const paramValidator = zValidator(
+  "param",
+  z.object({
+    scheduleId: z.string().uuid(),
+    userId: z.coerce.number().int().min(0),
+    candidateId: z.coerce.number().int().min(0),
+  }),
+  (result, c) => {
+    if (!result.success) {
+      return c.json({
+        status: "NG",
+        errors: [result.error],
+      }, 400);
+    }
+  }
+);
+
+const jsonValidator = zValidator(
+  "json",
+  z.object({
+    availability: z.number().int().min(0).max(2),
+  }),
+  (result, c) => {
+    if (!result.success) {
+      return c.json({
+        status: "NG",
+        errors: [result.error],
+      }, 400);
+    }
+  }
+);
+
 app.use(ensureAuthenticated());
-app.post("/:scheduleId/users/:userId/candidates/:candidateId", async (c) => {
+app.post("/:scheduleId/users/:userId/candidates/:candidateId", paramValidator, jsonValidator, async (c) => {
   const scheduleId = c.req.param("scheduleId");
   const userId = parseInt(c.req.param("userId"), 10);
   const candidateId = parseInt(c.req.param("candidateId"), 10);
+
+  const { user } = c.get("session") ?? {};
+  if (user?.id !== userId) {
+    return c.json({
+      status: "NG",
+      errors: [
+        { msg: "ユーザー ID が不正です。" }
+      ],
+    }, 500);
+  }
 
   const body = await c.req.json();
   const availability = body.availability ? parseInt(body.availability, 10) : 0;
@@ -20,16 +64,27 @@ app.post("/:scheduleId/users/:userId/candidates/:candidateId", async (c) => {
     candidateId,
     availability,
   };
-  await prisma.availability.upsert({
-    where: {
-      availabilityCompositeId: {
-        candidateId,
-        userId,
+
+  try {
+    await prisma.availability.upsert({
+      where: {
+        availabilityCompositeId: {
+          candidateId,
+          userId,
+        },
       },
-    },
-    create: data,
-    update: data,
-  });
+      create: data,
+      update: data,
+    });
+  } catch (error) {
+    console.error(error);
+    return c.json({
+      status: "NG",
+      errors: [
+        { msg: "データベース エラー。" }
+      ],
+    }, 500);
+  }
 
   return c.json({ status: "OK", availability });
 });

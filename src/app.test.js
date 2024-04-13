@@ -16,6 +16,29 @@ function mockIronSession() {
   });
 }
 
+// フォームからのリクエストを送信
+async function sendFormRequest(app, path, body) {
+  return app.request(path, {
+    method: "POST",
+    body: new URLSearchParams(body),
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Origin": "http://localhost",
+    },
+  });
+}
+
+// JSON リクエストを送信
+async function sendJsonRequest(app, path, body) {
+  return app.request(path, {
+    method: "POST",
+    body: JSON.stringify(body),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+}
+
 // テストで作成したデータを削除
 async function deleteScheduleAggregate(scheduleId) {
   // iron-session のモックを使うため、ここで読み込む
@@ -77,16 +100,10 @@ describe("/schedules", () => {
 
     const app = require("./app");
 
-    const postRes = await app.request("/schedules", {
-      method: "POST",
-      body: new URLSearchParams({
-        scheduleName: "テスト予定1",
-        memo: "テストメモ1\r\nテストメモ2",
-        candidates: "テスト候補1\r\nテスト候補2\r\nテスト候補3",
-      }),
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
+    const postRes = await sendFormRequest(app, "/schedules", {
+      scheduleName: "テスト予定1",
+      memo: "テストメモ1\r\nテストメモ2",
+      candidates: "テスト候補1\r\nテスト候補2\r\nテスト候補3",
     });
 
     expect(postRes.headers.get("Location")).toMatch(/schedules/);
@@ -127,16 +144,10 @@ describe("/schedules/:scheduleId/users/:userId/candidates/:candidateId", () => {
 
     const app = require("./app");
 
-    const postRes = await app.request("/schedules", {
-      method: "POST",
-      body: new URLSearchParams({
-        scheduleName: "テスト出欠更新予定1",
-        memo: "テスト出欠更新メモ1",
-        candidates: "テスト出欠更新候補1",
-      }),
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
+    const postRes = await sendFormRequest(app, "/schedules", {
+      scheduleName: "テスト出欠更新予定1",
+      memo: "テスト出欠更新メモ1",
+      candidates: "テスト出欠更新候補1",
     });
 
     const createdSchedulePath = postRes.headers.get("Location");
@@ -146,14 +157,12 @@ describe("/schedules/:scheduleId/users/:userId/candidates/:candidateId", () => {
       where: { scheduleId },
     });
 
-    const res = await app.request(
-      `/schedules/${scheduleId}/users/${testUser.userId}/candidates/${candidate.candidateId}`,
+    const res = await sendJsonRequest(
+      app, 
+      `/schedules/${scheduleId}/users/${testUser.userId}/candidates/${candidate.candidateId}`, 
       {
-        method: "POST",
-        body: JSON.stringify({
-          availability: 2,
-        }),
-      },
+        availability: 2,
+      }
     );
 
     expect(await res.json()).toEqual({ status: "OK", availability: 2 });
@@ -186,29 +195,21 @@ describe("/schedules/:scheduleId/users/:userId/comments", () => {
 
     const app = require("./app");
 
-    const postRes = await app.request("/schedules", {
-      method: "POST",
-      body: new URLSearchParams({
-        scheduleName: "テストコメント更新予定1",
-        memo: "テストコメント更新メモ1",
-        candidates: "テストコメント更新候補1",
-      }),
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
+    const postRes = await sendFormRequest(app, "/schedules", {
+      scheduleName: "テストコメント更新予定1",
+      memo: "テストコメント更新メモ1",
+      candidates: "テストコメント更新候補1",
     });
 
     const createdSchedulePath = postRes.headers.get("Location");
     scheduleId = createdSchedulePath.split("/schedules/")[1];
 
-    const res = await app.request(
-      `/schedules/${scheduleId}/users/${testUser.userId}/comments`,
+    const res = await sendJsonRequest(
+      app, 
+      `/schedules/${scheduleId}/users/${testUser.userId}/comments`, 
       {
-        method: "POST",
-        body: JSON.stringify({
-          comment: "testcomment",
-        }),
-      },
+        comment: "testcomment",
+      }
     );
 
     expect(await res.json()).toEqual({ status: "OK", comment: "testcomment" });
@@ -239,28 +240,19 @@ describe("/schedules/:scheduleId/update", () => {
 
     const app = require("./app");
 
-    const postRes = await app.request("/schedules", {
-      method: "POST",
-      body: new URLSearchParams({
-        scheduleName: "テスト更新予定1",
-        memo: "テスト更新メモ1",
-        candidates: "テスト更新候補1",
-      }),
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
+    const postRes = await sendFormRequest(app, "/schedules", {
+      scheduleName: "テスト更新予定1",
+      memo: "テスト更新メモ1",
+      candidates: "テスト更新候補1",
     });
 
     const createdSchedulePath = postRes.headers.get("Location");
     scheduleId = createdSchedulePath.split("/schedules/")[1];
 
-    const res = await app.request(`/schedules/${scheduleId}/update`, {
-      method: "POST",
-      body: JSON.stringify({
-        scheduleName: "テスト更新予定2",
-        memo: "テスト更新メモ2",
-        candidates: "テスト更新候補2",
-      }),
+    const res = await sendFormRequest(app, `/schedules/${scheduleId}/update`, {
+      scheduleName: "テスト更新予定2",
+      memo: "テスト更新メモ2",
+      candidates: "テスト更新候補2",
     });
 
     const schedule = await prisma.schedule.findUnique({
@@ -297,16 +289,10 @@ describe("/schedules/:scheduleId/delete", () => {
 
     const app = require("./app");
 
-    const postRes = await app.request("/schedules", {
-      method: "POST",
-      body: new URLSearchParams({
-        scheduleName: "テスト削除予定1",
-        memo: "テスト削除メモ1",
-        candidates: "テスト削除候補1",
-      }),
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
+    const postRes = await sendFormRequest(app, "/schedules", {
+      scheduleName: "テスト削除予定1",
+      memo: "テスト削除メモ1",
+      candidates: "テスト削除候補1",
     });
 
     const createdSchedulePath = postRes.headers.get("Location");
@@ -316,25 +302,21 @@ describe("/schedules/:scheduleId/delete", () => {
     const candidate = await prisma.candidate.findFirst({
       where: { scheduleId },
     });
-    await app.request(
-      `/schedules/${scheduleId}/users/${testUser.userId}/candidates/${candidate.candidateId}`,
+    await sendJsonRequest(
+      app, 
+      `/schedules/${scheduleId}/users/${testUser.userId}/candidates/${candidate.candidateId}`, 
       {
-        method: "POST",
-        body: JSON.stringify({
-          availability: 2,
-        }),
-      },
+        availability: 2,
+      }
     );
 
     // コメント作成
-    await app.request(
-      `/schedules/${scheduleId}/users/${testUser.userId}/comments`,
+    await sendJsonRequest(
+      app, 
+      `/schedules/${scheduleId}/users/${testUser.userId}/comments`, 
       {
-        method: "POST",
-        body: JSON.stringify({
-          comment: "testcomment",
-        }),
-      },
+        comment: "testcomment",
+      }
     );
 
     // 削除

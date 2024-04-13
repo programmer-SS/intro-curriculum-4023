@@ -992,6 +992,11 @@
   resolved "https://registry.yarnpkg.com/@hono/oauth-providers/-/oauth-providers-0.3.2.tgz#9b24ad3eaeefd26080abb8e3c1e017b33675651b"
   integrity sha512-Z9LzM/G8vIjGfv0u6mpgQp0Xlw0At5z9EwimguUxG2YaSvFJzkKyZdw2prMhRmURiHFRcdLVghmZPWrMEGXnkQ==
 
+"@hono/zod-validator@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@hono/zod-validator/-/zod-validator-0.2.1.tgz#41ed7464fea2f1453e22e812fe9de0b5119c158e"
+  integrity sha512-HFoxln7Q6JsE64qz2WBS28SD33UB2alp3aRKmcWnNLDzEL1BLsWfbdX6e1HIiUprHYTIXf5y7ax8eYidKUwyaA==
+
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@istanbuljs/load-nyc-config/-/load-nyc-config-1.1.0.tgz#fd3db1d59ecf7cf121e80650bb86712f9b55eced"
@@ -3790,3 +3795,8 @@ yocto-queue@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-1.0.0.tgz#7f816433fb2cbc511ec8bf7d263c3b58a1a3c251"
   integrity sha512-9bnSc/HEW2uRy67wc+T8UwauLuPJVn28jb+GtJY16iiKWyvmYJRXVT4UamsAEGQfPohgr2q4Tq0sQbQlxTfi1g==
+
+zod@^3.22.4:
+  version "3.22.4"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-3.22.4.tgz#f31c3a9386f61b1f228af56faa9255e845cf3fff"
+  integrity sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==

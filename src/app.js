@@ -21,6 +21,7 @@ const logoutRouter = require("./routes/logout");
 const scheduleRouter = require("./routes/schedules");
 const availabilitiesRouter = require("./routes/availabilities");
 const commentsRouter = require("./routes/comments");
+const { getCookie, deleteCookie } = require("hono/cookie");
 
 const app = new Hono();
 
@@ -69,7 +70,14 @@ app.get("/auth/github", async (c) => {
     create: data,
   });
 
-  return c.redirect("/");
+  const loginFrom = getCookie(c, "loginFrom");
+  // オープンリダイレクタ脆弱性対策
+  if (loginFrom && loginFrom.startsWith('/')) {
+    deleteCookie(c, "loginFrom");
+    return c.redirect(loginFrom);
+  } else {
+    return c.redirect("/");
+  }
 });
 
 // ルーティング
