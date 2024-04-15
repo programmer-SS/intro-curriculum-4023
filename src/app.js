@@ -7,6 +7,7 @@ const { html } = require("hono/html");
 const { HTTPException } = require("hono/http-exception");
 const { secureHeaders } = require("hono/secure-headers");
 const { env } = require("hono/adapter");
+const { getCookie, deleteCookie } = require("hono/cookie");
 const { serveStatic } = require("@hono/node-server/serve-static");
 const { githubAuth } = require("@hono/oauth-providers/github");
 const { getIronSession } = require("iron-session");
@@ -21,11 +22,16 @@ const logoutRouter = require("./routes/logout");
 const scheduleRouter = require("./routes/schedules");
 const availabilitiesRouter = require("./routes/availabilities");
 const commentsRouter = require("./routes/comments");
-const { getCookie, deleteCookie } = require("hono/cookie");
 
 const app = new Hono();
 
-app.use(csrf());
+app.use(async (c, next) => {
+  const { CSRF_TRUSTED_ORIGIN } = env(c);
+  const handler = csrf({
+    origin: CSRF_TRUSTED_ORIGIN,
+  });
+  await handler(c, next);
+});
 app.use(logger());
 app.use(serveStatic({ root: "./public" }));
 app.use(secureHeaders({
@@ -50,6 +56,7 @@ app.use("/auth/github", async (c, next) => {
     client_id: GITHUB_CLIENT_ID,
     client_secret: GITHUB_CLIENT_SECRET,
     scope: ["user:email"],
+    oauthApp: true,
   });
   return await authHandler(c, next).catch(() => c.redirect("/login"));
 });
