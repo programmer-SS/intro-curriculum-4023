@@ -28,7 +28,9 @@ const app = new Hono();
 app.use(csrf());
 app.use(logger());
 app.use(serveStatic({ root: "./public" }));
-app.use(secureHeaders());
+app.use(secureHeaders({
+  referrerPolicy: "strict-origin-when-cross-origin",
+}));
 
 // セッション管理をするためのミドルウェア
 app.use(async (c, next) => {
