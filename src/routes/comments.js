@@ -52,7 +52,7 @@ app.post("/:scheduleId/users/:userId/comments", paramValidator, jsonValidator, a
       errors: [
         { msg: "ユーザー ID が不正です。" }
       ],
-    }, 500);
+    }, 403);
   }
 
   const data = {

@@ -52,7 +52,7 @@ app.post("/:scheduleId/users/:userId/candidates/:candidateId", paramValidator, j
       errors: [
         { msg: "ユーザー ID が不正です。" }
       ],
-    }, 500);
+    }, 403);
   }
 
   const body = await c.req.json();
