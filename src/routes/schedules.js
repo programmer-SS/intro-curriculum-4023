@@ -85,7 +85,7 @@ app.get("/new", ensureAuthenticated(), (c) => {
 
 app.post("/", ensureAuthenticated(), scheduleFormValidator, async (c) => {
   const { user } = c.get("session") ?? {};
-  const body = await c.req.parseBody();
+  const body = c.req.valid("form");
 
   // 予定を登録
   const schedule = await prisma.schedule.create({
@@ -109,7 +109,7 @@ app.post("/", ensureAuthenticated(), scheduleFormValidator, async (c) => {
 app.get("/:scheduleId", ensureAuthenticated(), scheduleIdValidator, async (c) => {
   const { user } = c.get("session") ?? {};
   const schedule = await prisma.schedule.findUnique({
-    where: { scheduleId: c.req.param("scheduleId") },
+    where: { scheduleId: c.req.valid("param").scheduleId },
     include: {
       user: {
         select: {
@@ -286,7 +286,7 @@ function isMine(userId, schedule) {
 app.get("/:scheduleId/edit", ensureAuthenticated(), scheduleIdValidator, async (c) => {
   const { user } = c.get("session") ?? {};
   const schedule = await prisma.schedule.findUnique({
-    where: { scheduleId: c.req.param("scheduleId") },
+    where: { scheduleId: c.req.valid("param").scheduleId },
   });
   if (!isMine(user.id, schedule)) {
     return c.notFound();
@@ -351,13 +351,13 @@ app.get("/:scheduleId/edit", ensureAuthenticated(), scheduleIdValidator, async (
 app.post("/:scheduleId/update", ensureAuthenticated(), scheduleIdValidator, scheduleFormValidator, async (c) => {
   const { user } = c.get("session") ?? {};
   const schedule = await prisma.schedule.findUnique({
-    where: { scheduleId: c.req.param("scheduleId") },
+    where: { scheduleId: c.req.valid("param").scheduleId },
   });
   if (!isMine(user.id, schedule)) {
     return c.notFound();
   }
 
-  const body = await c.req.parseBody();
+  const body = c.req.valid("form");
   const updatedSchedule = await prisma.schedule.update({
     where: { scheduleId: schedule.scheduleId },
     data: {
@@ -387,7 +387,7 @@ app.deleteScheduleAggregate = deleteScheduleAggregate;
 app.post("/:scheduleId/delete", ensureAuthenticated(), scheduleIdValidator, async (c) => {
   const { user } = c.get("session") ?? {};
   const schedule = await prisma.schedule.findUnique({
-    where: { scheduleId: c.req.param("scheduleId") },
+    where: { scheduleId: c.req.valid("param").scheduleId },
   });
   if (!isMine(user.id, schedule)) {
     return c.notFound();

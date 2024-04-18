@@ -44,9 +44,8 @@ app.post(
   paramValidator,
   jsonValidator, 
   async (c) => {
-    const scheduleId = c.req.param("scheduleId");
-    const userId = parseInt(c.req.param("userId"), 10);
-    const body = await c.req.json();
+    const { scheduleId, userId } = c.req.valid("param");
+    const body = c.req.valid("json");
     const comment = body.comment.slice(0, 255);
 
     const { user } = c.get("session") ?? {};
