@@ -16,7 +16,14 @@ function mockIronSession() {
   });
 }
 
-// フォームからのリクエストを送信
+// テストで作成したデータを削除
+async function deleteScheduleAggregate(scheduleId) {
+  // iron-session のモックを使うため、ここで読み込む
+  const { deleteScheduleAggregate } = require("./routes/schedules");
+  await deleteScheduleAggregate(scheduleId);
+}
+
+// フォームからリクエストを送信する
 async function sendFormRequest(app, path, body) {
   return app.request(path, {
     method: "POST",
@@ -28,7 +35,7 @@ async function sendFormRequest(app, path, body) {
   });
 }
 
-// JSON リクエストを送信
+// JSON を含んだリクエストを送信する
 async function sendJsonRequest(app, path, body) {
   return app.request(path, {
     method: "POST",
@@ -37,13 +44,6 @@ async function sendJsonRequest(app, path, body) {
       "Content-Type": "application/json",
     },
   });
-}
-
-// テストで作成したデータを削除
-async function deleteScheduleAggregate(scheduleId) {
-  // iron-session のモックを使うため、ここで読み込む
-  const { deleteScheduleAggregate } = require("./routes/schedules");
-  await deleteScheduleAggregate(scheduleId);
 }
 
 describe("/login", () => {
@@ -159,10 +159,10 @@ describe("/schedules/:scheduleId/users/:userId/candidates/:candidateId", () => {
 
     const res = await sendJsonRequest(
       app, 
-      `/schedules/${scheduleId}/users/${testUser.userId}/candidates/${candidate.candidateId}`, 
+      `/schedules/${scheduleId}/users/${testUser.userId}/candidates/${candidate.candidateId}`,
       {
         availability: 2,
-      }
+      },
     );
 
     expect(await res.json()).toEqual({ status: "OK", availability: 2 });
@@ -206,10 +206,10 @@ describe("/schedules/:scheduleId/users/:userId/comments", () => {
 
     const res = await sendJsonRequest(
       app, 
-      `/schedules/${scheduleId}/users/${testUser.userId}/comments`, 
+      `/schedules/${scheduleId}/users/${testUser.userId}/comments`,
       {
         comment: "testcomment",
-      }
+      },
     );
 
     expect(await res.json()).toEqual({ status: "OK", comment: "testcomment" });
@@ -304,19 +304,19 @@ describe("/schedules/:scheduleId/delete", () => {
     });
     await sendJsonRequest(
       app, 
-      `/schedules/${scheduleId}/users/${testUser.userId}/candidates/${candidate.candidateId}`, 
+      `/schedules/${scheduleId}/users/${testUser.userId}/candidates/${candidate.candidateId}`,
       {
         availability: 2,
-      }
+      },
     );
 
     // コメント作成
     await sendJsonRequest(
       app, 
-      `/schedules/${scheduleId}/users/${testUser.userId}/comments`, 
+      `/schedules/${scheduleId}/users/${testUser.userId}/comments`,
       {
         comment: "testcomment",
-      }
+      },
     );
 
     // 削除

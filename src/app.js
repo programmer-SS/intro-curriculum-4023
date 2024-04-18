@@ -58,7 +58,7 @@ app.use("/auth/github", async (c, next) => {
     scope: ["user:email"],
     oauthApp: true,
   });
-  return await authHandler(c, next).catch(() => c.redirect("/login"));
+  return await authHandler(c, next);
 });
 
 // GitHub 認証の後の処理
@@ -114,6 +114,7 @@ app.notFound((c) => {
 
 // エラーハンドリング
 app.onError((error, c) => {
+  console.error(error);
   const statusCode = error instanceof HTTPException ? error.status : 500;
   const { NODE_ENV } = env(c);
   return c.html(

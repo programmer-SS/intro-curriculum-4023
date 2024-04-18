@@ -55,9 +55,7 @@ function parseCandidateNames(candidatesStr) {
     .map((s) => s.trim())
     .filter((s) => s !== "");
 }
-
-app.use("/new", ensureAuthenticated());
-app.get("/new", (c) => {
+app.get("/new", ensureAuthenticated(), (c) => {
   return c.html(
     layout(
       c,
@@ -85,9 +83,8 @@ app.get("/new", (c) => {
   );
 });
 
-app.use("/", ensureAuthenticated());
-app.post("/", scheduleFormValidator, async (c) => {
-  const { user } = c.get("session");
+app.post("/", ensureAuthenticated(), scheduleFormValidator, async (c) => {
+  const { user } = c.get("session") ?? {};
   const body = await c.req.parseBody();
 
   // 予定を登録
@@ -109,9 +106,8 @@ app.post("/", scheduleFormValidator, async (c) => {
   return c.redirect("/schedules/" + schedule.scheduleId);
 });
 
-app.use("/:scheduleId", ensureAuthenticated());
-app.get("/:scheduleId", scheduleIdValidator, async (c) => {
-  const { user } = c.get("session");
+app.get("/:scheduleId", ensureAuthenticated(), scheduleIdValidator, async (c) => {
+  const { user } = c.get("session") ?? {};
   const schedule = await prisma.schedule.findUnique({
     where: { scheduleId: c.req.param("scheduleId") },
     include: {
@@ -242,7 +238,7 @@ app.get("/:scheduleId", scheduleIdValidator, async (c) => {
                             >
                               ${label}
                             </button>`
-                          : html`<h3>${label}</h3>`}
+                            : html`<h3>${label}</h3>`}
                       </td>
                     `;
                   })}
@@ -255,11 +251,11 @@ app.get("/:scheduleId", scheduleIdValidator, async (c) => {
                 const comment = commentMap.get(user.userId);
                 return html`
                   <td>
-                    <p>
-                      <small id="${user.isSelf ? "self-comment" : ""}">
-                        ${comment}
-                      </small>
-                    </p>
+                      <p>
+                        <small id="${user.isSelf ? "self-comment" : ""}">
+                          ${comment}
+                        </small>
+                      </p>
                     ${user.isSelf
                       ? html`
                           <button
@@ -287,9 +283,8 @@ function isMine(userId, schedule) {
   return schedule && parseInt(schedule.createdBy, 10) === parseInt(userId, 10);
 }
 
-app.use("/:scheduleId/edit", ensureAuthenticated());
-app.get("/:scheduleId/edit", scheduleIdValidator, async (c) => {
-  const { user } = c.get("session");
+app.get("/:scheduleId/edit", ensureAuthenticated(), scheduleIdValidator, async (c) => {
+  const { user } = c.get("session") ?? {};
   const schedule = await prisma.schedule.findUnique({
     where: { scheduleId: c.req.param("scheduleId") },
   });
@@ -353,9 +348,8 @@ app.get("/:scheduleId/edit", scheduleIdValidator, async (c) => {
   );
 });
 
-app.use("/:scheduleId/update", ensureAuthenticated());
-app.post("/:scheduleId/update", scheduleIdValidator, scheduleFormValidator, async (c) => {
-  const { user } = c.get("session");
+app.post("/:scheduleId/update", ensureAuthenticated(), scheduleIdValidator, scheduleFormValidator, async (c) => {
+  const { user } = c.get("session") ?? {};
   const schedule = await prisma.schedule.findUnique({
     where: { scheduleId: c.req.param("scheduleId") },
   });
@@ -390,9 +384,8 @@ async function deleteScheduleAggregate(scheduleId) {
 }
 app.deleteScheduleAggregate = deleteScheduleAggregate;
 
-app.use("/:scheduleId/delete", ensureAuthenticated());
-app.post("/:scheduleId/delete", scheduleIdValidator, async (c) => {
-  const { user } = c.get("session");
+app.post("/:scheduleId/delete", ensureAuthenticated(), scheduleIdValidator, async (c) => {
+  const { user } = c.get("session") ?? {};
   const schedule = await prisma.schedule.findUnique({
     where: { scheduleId: c.req.param("scheduleId") },
   });

@@ -39,54 +39,59 @@ const jsonValidator = zValidator(
   }
 );
 
-app.use(ensureAuthenticated());
-app.post("/:scheduleId/users/:userId/candidates/:candidateId", paramValidator, jsonValidator, async (c) => {
-  const scheduleId = c.req.param("scheduleId");
-  const userId = parseInt(c.req.param("userId"), 10);
-  const candidateId = parseInt(c.req.param("candidateId"), 10);
+app.post(
+  "/:scheduleId/users/:userId/candidates/:candidateId", 
+  ensureAuthenticated(),
+  paramValidator, 
+  jsonValidator, 
+  async (c) => {
+    const scheduleId = c.req.param("scheduleId");
+    const userId = parseInt(c.req.param("userId"), 10);
+    const candidateId = parseInt(c.req.param("candidateId"), 10);
 
-  const { user } = c.get("session") ?? {};
-  if (user?.id !== userId) {
-    return c.json({
-      status: "NG",
-      errors: [
-        { msg: "ユーザー ID が不正です。" }
-      ],
-    }, 403);
-  }
+    const { user } = c.get("session") ?? {};
+    if (user?.id !== userId) {
+      return c.json({
+        status: "NG",
+        errors: [
+          { msg: "ユーザー ID が不正です。" }
+        ],
+      }, 403);
+    }
 
-  const body = await c.req.json();
-  const availability = body.availability ? parseInt(body.availability, 10) : 0;
+    const body = await c.req.json();
+    const availability = body.availability ? parseInt(body.availability, 10) : 0;
 
-  const data = {
-    userId,
-    scheduleId,
-    candidateId,
-    availability,
-  };
+    const data = {
+      userId,
+      scheduleId,
+      candidateId,
+      availability,
+    };
 
-  try {
-    await prisma.availability.upsert({
-      where: {
-        availabilityCompositeId: {
-          candidateId,
-          userId,
+    try {
+      await prisma.availability.upsert({
+        where: {
+          availabilityCompositeId: {
+            candidateId,
+            userId,
+          },
         },
-      },
-      create: data,
-      update: data,
-    });
-  } catch (error) {
-    console.error(error);
-    return c.json({
-      status: "NG",
-      errors: [
-        { msg: "データベース エラー。" }
-      ],
-    }, 500);
-  }
+        create: data,
+        update: data,
+      });
+    } catch (error) {
+      console.error(error);
+      return c.json({
+        status: "NG",
+        errors: [
+          { msg: "データベース エラー。" }
+        ],
+      }, 500);
+    }
 
-  return c.json({ status: "OK", availability });
-});
+    return c.json({ status: "OK", availability });
+  }
+);
 
 module.exports = app;

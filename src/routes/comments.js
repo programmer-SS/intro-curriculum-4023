@@ -38,48 +38,53 @@ const jsonValidator = zValidator(
   }
 );
 
-app.use(ensureAuthenticated());
-app.post("/:scheduleId/users/:userId/comments", paramValidator, jsonValidator, async (c) => {
-  const scheduleId = c.req.param("scheduleId");
-  const userId = parseInt(c.req.param("userId"), 10);
-  const body = await c.req.json();
-  const comment = body.comment.slice(0, 255);
+app.post(
+  "/:scheduleId/users/:userId/comments",
+  ensureAuthenticated(),
+  paramValidator,
+  jsonValidator, 
+  async (c) => {
+    const scheduleId = c.req.param("scheduleId");
+    const userId = parseInt(c.req.param("userId"), 10);
+    const body = await c.req.json();
+    const comment = body.comment.slice(0, 255);
 
-  const { user } = c.get("session") ?? {};
-  if (user?.id !== userId) {
-    return c.json({
-      status: "NG",
-      errors: [
-        { msg: "ユーザー ID が不正です。" }
-      ],
-    }, 403);
-  }
+    const { user } = c.get("session") ?? {};
+    if (user?.id !== userId) {
+      return c.json({
+        status: "NG",
+        errors: [
+          { msg: "ユーザー ID が不正です。" }
+        ],
+      }, 403);
+    }
 
-  const data = {
-    userId,
-    scheduleId,
-    comment,
-  };
-  try {
-    await prisma.comment.upsert({
-      where: {
-        commentCompositeId: {
-          userId,
-          scheduleId,
+      const data = {
+        userId,
+        scheduleId,
+        comment,
+      };
+    try {
+      await prisma.comment.upsert({
+        where: {
+          commentCompositeId: {
+            userId,
+            scheduleId,
+          },
         },
-      },
-      update: data,
-      create: data,
-    });
-  } catch (error) {
-    console.error(error);
-    return c.json({ 
-      status: "NG",
-      errors: [{ msg: "データベース エラー。" }],
-    }, 500);
-  }
+        update: data,
+        create: data,
+      });
+    } catch (error) {
+      console.error(error);
+      return c.json({ 
+        status: "NG",
+        errors: [{ msg: "データベース エラー。" }],
+      }, 500);
+    }
 
-  return c.json({ status: "OK", comment });
-});
+    return c.json({ status: "OK", comment });
+  },
+);
 
 module.exports = app;
