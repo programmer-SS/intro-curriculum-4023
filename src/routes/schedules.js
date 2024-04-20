@@ -14,7 +14,7 @@ const app = new Hono();
 const scheduleIdValidator = zValidator(
   "param", 
   z.object({
-    "scheduleId": z.string().uuid(),
+    scheduleId: z.string().uuid(),
   }),
   (result) => {
     if (!result.success) {
@@ -28,9 +28,9 @@ const scheduleIdValidator = zValidator(
 const scheduleFormValidator = zValidator(
   "form",
   z.object({
-    "scheduleName": z.string(),
-    "memo": z.string(),
-    "candidates": z.string(),
+    scheduleName: z.string(),
+    memo: z.string(),
+    candidates: z.string(),
   }),
   (result) => {
     if (!result.success) {
@@ -55,6 +55,7 @@ function parseCandidateNames(candidatesStr) {
     .map((s) => s.trim())
     .filter((s) => s !== "");
 }
+
 app.get("/new", ensureAuthenticated(), (c) => {
   return c.html(
     layout(

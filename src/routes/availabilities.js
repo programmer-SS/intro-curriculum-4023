@@ -46,6 +46,7 @@ app.post(
   jsonValidator, 
   async (c) => {
     const { scheduleId, userId, candidateId } = c.req.valid("param");
+    const { availability } = c.req.valid("json");
 
     const { user } = c.get("session") ?? {};
     if (user?.id !== userId) {
@@ -56,9 +57,6 @@ app.post(
         ],
       }, 403);
     }
-
-    const body = c.req.valid("json");
-    const availability = body.availability ? parseInt(body.availability, 10) : 0;
 
     const data = {
       userId,
