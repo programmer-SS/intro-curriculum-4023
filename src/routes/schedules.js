@@ -2,7 +2,7 @@ const { Hono } = require("hono");
 const { html } = require("hono/html");
 const layout = require("../layout");
 const ensureAuthenticated = require("../middlewares/ensure-authenticated");
-const { v4: uuidv4 } = require("uuid");
+const { randomUUID } = require("node:crypto");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient({ log: ["query"] });
 const { z } = require("zod");
@@ -91,7 +91,7 @@ app.post("/", ensureAuthenticated(), scheduleFormValidator, async (c) => {
   // 予定を登録
   const schedule = await prisma.schedule.create({
     data: {
-      scheduleId: uuidv4(),
+      scheduleId: randomUUID(),
       scheduleName: body.scheduleName.slice(0, 255) || "（名称未設定）",
       memo: body.memo,
       createdBy: user.id,

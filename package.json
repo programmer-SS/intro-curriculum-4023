@@ -21,7 +21,6 @@
     "hono": "4.2.7",
     "iron-session": "8.0.1",
     "jquery": "3.7.1",
-    "uuid": "9.0.1",
     "zod": "3.22.4"
   },
   "devDependencies": {
