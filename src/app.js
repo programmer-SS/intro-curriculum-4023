@@ -35,7 +35,7 @@ app.use(async (c, next) => {
 app.use(logger());
 app.use(serveStatic({ root: "./public" }));
 app.use(secureHeaders({
-	referrerPolicy: "strict-origin-when-cross-origin",
+  referrerPolicy: "strict-origin-when-cross-origin",
 }));
 app.use(trimTrailingSlash());
 
