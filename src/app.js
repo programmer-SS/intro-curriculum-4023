@@ -37,8 +37,9 @@ app.use(serveStatic({ root: "./public" }));
 app.use(secureHeaders({
   referrerPolicy: "strict-origin-when-cross-origin",
 }));
+app.use(trimTrailingSlash());
 
-// セッション管理をするためのミドルウェア
+// セッション管理用のミドルウェア
 app.use(async (c, next) => {
   const { SESSION_PASSWORD } = env(c);
   const session = await getIronSession(c.req.raw, c.res, {
