@@ -42,7 +42,7 @@ app.post(
   "/:scheduleId/users/:userId/comments",
   ensureAuthenticated(),
   paramValidator,
-  jsonValidator, 
+  jsonValidator,
   async (c) => {
     const { scheduleId, userId } = c.req.valid("param");
     const { comment } = c.req.valid("json");
@@ -57,11 +57,12 @@ app.post(
       }, 403);
     }
 
-      const data = {
-        userId,
-        scheduleId,
-        comment,
-      };
+    const data = {
+      userId,
+      scheduleId,
+      comment,
+    };
+
     try {
       await prisma.comment.upsert({
         where: {

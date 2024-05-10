@@ -40,10 +40,10 @@ const jsonValidator = zValidator(
 );
 
 app.post(
-  "/:scheduleId/users/:userId/candidates/:candidateId", 
+  "/:scheduleId/users/:userId/candidates/:candidateId",
   ensureAuthenticated(),
-  paramValidator, 
-  jsonValidator, 
+  paramValidator,
+  jsonValidator,
   async (c) => {
     const { scheduleId, userId, candidateId } = c.req.valid("param");
     const { availability } = c.req.valid("json");
@@ -87,7 +87,7 @@ app.post(
     }
 
     return c.json({ status: "OK", availability });
-  }
+  },
 );
 
 module.exports = app;
