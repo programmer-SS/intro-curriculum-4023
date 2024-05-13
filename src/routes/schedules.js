@@ -239,7 +239,7 @@ app.get("/:scheduleId", ensureAuthenticated(), scheduleIdValidator, async (c) =>
                             >
                               ${label}
                             </button>`
-                            : html`<h3>${label}</h3>`}
+                          : html`<h3>${label}</h3>`}
                       </td>
                     `;
                   })}
