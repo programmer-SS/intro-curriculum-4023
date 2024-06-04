@@ -23,8 +23,7 @@ function layout(c, title, body) {
               data-bs-target="#navbarResponsive"
               aria-controls="navbarResponsive"
               aria-expanded="false"
-              a
-              ria-label="Toggle navigation"
+              aria-label="Toggle navigation"
             >
               <span class="navbar-toggler-icon"></span>
             </button>

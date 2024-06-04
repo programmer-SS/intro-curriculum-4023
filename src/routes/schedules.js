@@ -12,15 +12,13 @@ const { HTTPException } = require("hono/http-exception");
 const app = new Hono();
 
 const scheduleIdValidator = zValidator(
-  "param", 
+  "param",
   z.object({
     scheduleId: z.string().uuid(),
   }),
   (result) => {
     if (!result.success) {
-      throw new HTTPException(400, {
-        message: "URL の形式が正しくありません。",
-      });
+      throw new HTTPException(400, { message: "URL の形式が正しくありません。" });
     }
   }
 );
@@ -34,7 +32,7 @@ const scheduleFormValidator = zValidator(
   }),
   (result) => {
     if (!result.success) {
-      throw new HTTPException(400, "入力された情報が不十分または正しくありません。");
+      throw new HTTPException(400, { message: "入力された情報が不十分または正しくありません" });
     }
   }
 );
@@ -201,12 +199,13 @@ app.get("/:scheduleId", ensureAuthenticated(), scheduleIdValidator, async (c) =>
           <div class="card-footer">作成者: ${schedule.user.username}</div>
         </div>
         ${isMine(user.id, schedule)
-          ? html`<a
-              href="/schedules/${schedule.scheduleId}/edit"
-              class="btn btn-primary"
-            >
-              この予定を編集する
-            </a>`
+          ? html`
+              <a
+                href="/schedules/${schedule.scheduleId}/edit"
+                class="btn btn-primary"
+              >
+                この予定を編集する
+              </a>`
           : ""}
         <h3 class="my-3">出欠表</h3>
         <div class="table-responsive">
@@ -228,7 +227,7 @@ app.get("/:scheduleId", ensureAuthenticated(), scheduleIdValidator, async (c) =>
                     return html`
                       <td>
                         ${user.isSelf
-                          ? html` <button
+                          ? html`<button
                               data-schedule-id="${schedule.scheduleId}"
                               data-user-id="${user.userId}"
                               data-candidate-id="${candidate.candidateId}"
@@ -252,11 +251,11 @@ app.get("/:scheduleId", ensureAuthenticated(), scheduleIdValidator, async (c) =>
                 const comment = commentMap.get(user.userId);
                 return html`
                   <td>
-                      <p>
-                        <small id="${user.isSelf ? "self-comment" : ""}">
-                          ${comment}
-                        </small>
-                      </p>
+                    <p>
+                      <small id="${user.isSelf ? "self-comment" : ""}">
+                        ${comment}
+                      </small>
+                    </p>
                     ${user.isSelf
                       ? html`
                           <button
@@ -326,9 +325,7 @@ app.get("/:scheduleId/edit", ensureAuthenticated(), scheduleIdValidator, async (
             <ul class="list-group mb-2">
               ${candidates.map(
                 (candidate) =>
-                  html`<li class="list-group-item">
-                    ${candidate.candidateName}
-                  </li>`,
+                  html`<li class="list-group-item">${candidate.candidateName}</li>`,
               )}
             </ul>
             <p>候補日程の追加 (改行して複数入力してください)</p>

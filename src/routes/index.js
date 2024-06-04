@@ -40,9 +40,9 @@ app.get("/", async (c) => {
   const { user } = c.get("session") ?? {};
   const schedules = user
     ? await prisma.schedule.findMany({
-        where: { createdBy: user.id },
-        orderBy: { updatedAt: "desc" },
-      })
+      where: { createdBy: user.id },
+      orderBy: { updatedAt: "desc" },
+    })
     : [];
   schedules.forEach((schedule) => {
     schedule.formattedUpdatedAt = dayjs(schedule.updatedAt).tz().format("YYYY/MM/DD HH:mm");
