@@ -52,9 +52,7 @@ app.post(
     if (user?.id !== userId) {
       return c.json({
         status: "NG",
-        errors: [
-          { msg: "ユーザー ID が不正です。" }
-        ],
+        errors: [{ msg: "ユーザー ID が不正です。" }],
       }, 403);
     }
 
@@ -80,9 +78,7 @@ app.post(
       console.error(error);
       return c.json({
         status: "NG",
-        errors: [
-          { msg: "データベース エラー。" }
-        ],
+        errors: [{ msg: "データベース エラー。" }],
       }, 500);
     }
 

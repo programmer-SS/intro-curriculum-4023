@@ -18,7 +18,6 @@ function mockIronSession() {
 
 // テストで作成したデータを削除
 async function deleteScheduleAggregate(scheduleId) {
-  // iron-session のモックを使うため、ここで読み込む
   const { deleteScheduleAggregate } = require("./routes/schedules");
   await deleteScheduleAggregate(scheduleId);
 }
@@ -158,7 +157,7 @@ describe("/schedules/:scheduleId/users/:userId/candidates/:candidateId", () => {
     });
 
     const res = await sendJsonRequest(
-      app, 
+      app,
       `/schedules/${scheduleId}/users/${testUser.userId}/candidates/${candidate.candidateId}`,
       {
         availability: 2,
@@ -205,7 +204,7 @@ describe("/schedules/:scheduleId/users/:userId/comments", () => {
     scheduleId = createdSchedulePath.split("/schedules/")[1];
 
     const res = await sendJsonRequest(
-      app, 
+      app,
       `/schedules/${scheduleId}/users/${testUser.userId}/comments`,
       {
         comment: "testcomment",
@@ -303,7 +302,7 @@ describe("/schedules/:scheduleId/delete", () => {
       where: { scheduleId },
     });
     await sendJsonRequest(
-      app, 
+      app,
       `/schedules/${scheduleId}/users/${testUser.userId}/candidates/${candidate.candidateId}`,
       {
         availability: 2,
@@ -312,7 +311,7 @@ describe("/schedules/:scheduleId/delete", () => {
 
     // コメント作成
     await sendJsonRequest(
-      app, 
+      app,
       `/schedules/${scheduleId}/users/${testUser.userId}/comments`,
       {
         comment: "testcomment",

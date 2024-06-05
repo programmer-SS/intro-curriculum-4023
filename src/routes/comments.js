@@ -51,9 +51,7 @@ app.post(
     if (user?.id !== userId) {
       return c.json({
         status: "NG",
-        errors: [
-          { msg: "ユーザー ID が不正です。" }
-        ],
+        errors: [{ msg: "ユーザー ID が不正です。" }],
       }, 403);
     }
 
